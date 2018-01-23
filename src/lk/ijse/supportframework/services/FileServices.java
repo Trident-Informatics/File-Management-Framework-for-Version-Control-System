@@ -5,6 +5,8 @@ public interface FileServices {
 
     void cloneDirectory(String absolutePathOfFolder, String path);
 
+    void cloneDirectory(String absolutePathOfFolder, String path, Boolean watch);
+
     void renameAndMove(String filePath, String toPath, String newName);
 
     boolean compareSHAcode(String file1, String file2);

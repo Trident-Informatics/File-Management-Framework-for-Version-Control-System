@@ -6,8 +6,8 @@ import lk.ijse.supportframework.services.DirectoryWatcher;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import static java.nio.file.StandardWatchEventKinds.*;
@@ -15,10 +15,10 @@ import static java.nio.file.StandardWatchEventKinds.*;
 public class DirectoryWatcherImpl implements DirectoryWatcher {
     WatchService watcher;
     Map<Path, WatchKey> watchList = new Hashtable<>();
-    private ObservableSet<Path> createdSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new HashSet<Path>()));
-    private ObservableSet<Path> deletedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new HashSet<Path>()));
-    private ObservableSet<Path> modifiedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new HashSet<Path>()));
-    private ObservableSet<Path> generalSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new HashSet<Path>()));
+    private ObservableSet<Path> createdSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
+    private ObservableSet<Path> deletedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
+    private ObservableSet<Path> modifiedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
+    private ObservableSet<Path> generalSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
 
 
     public DirectoryWatcherImpl() {
@@ -28,7 +28,7 @@ public class DirectoryWatcherImpl implements DirectoryWatcher {
             e.printStackTrace();
         }
 
-        new Thread(() -> {
+        Thread watchService = new Thread(() -> {
             while (true) {
                 WatchKey key = null;
                 try {
@@ -67,7 +67,9 @@ public class DirectoryWatcherImpl implements DirectoryWatcher {
 
             }
 
-        }).start();
+        });
+        watchService.setDaemon(false);
+        watchService.start();
     }
 
 
@@ -81,7 +83,7 @@ public class DirectoryWatcherImpl implements DirectoryWatcher {
                 throw new NoSuchFileException(path.toFile().toString());
             } else {
                 WatchKey key = path.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-                watchList.put(path,key);
+                watchList.put(path, key);
             }
         }
     }
@@ -101,18 +103,18 @@ public class DirectoryWatcherImpl implements DirectoryWatcher {
             watchList.get(path).cancel();
             watchList.remove(path);
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     @Override
     public Path removeDirectory(String pathname) {
-        Path path=Paths.get(pathname);
-        path=path.toAbsolutePath();
-        if(removeDirectory(path)){
+        Path path = Paths.get(pathname);
+        path = path.toAbsolutePath();
+        if (removeDirectory(path)) {
             return path;
-        }else
+        } else
             return null;
     }
 

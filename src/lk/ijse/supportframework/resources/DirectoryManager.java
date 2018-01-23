@@ -1,6 +1,7 @@
 package lk.ijse.supportframework.resources;
 
-public class ServiceSupport {
+public class DirectoryManager {
+
 
     public void readPropertyFile(){
 

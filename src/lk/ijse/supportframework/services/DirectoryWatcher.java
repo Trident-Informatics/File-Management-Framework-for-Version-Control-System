@@ -1,6 +1,7 @@
 package lk.ijse.supportframework.services;
 
 import javafx.collections.ObservableSet;
+import lk.ijse.supportframework.services.impl.DirectoryWatcherImpl;
 
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
@@ -8,11 +9,23 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 
 public interface DirectoryWatcher {
+
+    class INSTANCE{
+        private static DirectoryWatcher directoryWatcher;
+    }
+
+    static DirectoryWatcher getDefault(){
+        if (INSTANCE.directoryWatcher==null){
+            INSTANCE.directoryWatcher=new DirectoryWatcherImpl();
+        }
+        return INSTANCE.directoryWatcher;
+    }
+
     /**
      * Adds an directory to the set of watched directories for this object, provided that it is not the same as some directory already in the set.
      * Specified directory will be monitored for all possible <code>WatchEvents</code>
      *
-     * @param path Path of the directory to be watched
+     * @param path <code>Path</code> of the directory to be watched
      * @throws NullPointerException If the pathname argument is null
      * @throws NoSuchFileException If the file declared by <code>Path</code> does not exist
      * @throws IOException If any other I/O Exception is caused
