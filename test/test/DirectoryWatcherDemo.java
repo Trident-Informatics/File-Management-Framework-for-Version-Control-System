@@ -20,14 +20,21 @@ public class DirectoryWatcherDemo {
 
             System.out.println(p.toString());
             File f=p.toFile();
-            System.out.println(f.isFile());
+            System.out.println("Listener path: "+f.getAbsolutePath());
+            System.out.println("Listener exists: "+f.exists());
+            System.out.println("Listener isDirectory: "+f.isDirectory());
         };
 
         created.addListener(createdListener);
         try {
-            watcher.registerDirectory(Paths.get("./test"));
+            watcher.registerDirectory(Paths.get("test"));
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        File f=new File("./test/abc");
+        f.mkdir();
+        System.out.println("Is Directory: "+f.isDirectory());
+
     }
 }

@@ -13,12 +13,12 @@ import java.util.Map;
 import static java.nio.file.StandardWatchEventKinds.*;
 
 public class DirectoryWatcherImpl implements DirectoryWatcher {
-    WatchService watcher;
-    Map<Path, WatchKey> watchList = new Hashtable<>();
-    private ObservableSet<Path> createdSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
-    private ObservableSet<Path> deletedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
-    private ObservableSet<Path> modifiedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
-    private ObservableSet<Path> generalSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<Path>()));
+    private WatchService watcher;
+    private Map<Path, WatchKey> watchList = new Hashtable<>();
+    private ObservableSet<Path> createdSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<>()));
+    private ObservableSet<Path> deletedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<>()));
+    private ObservableSet<Path> modifiedSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<>()));
+    private ObservableSet<Path> generalSet = FXCollections.synchronizedObservableSet(FXCollections.observableSet(new LinkedHashSet<>()));
 
 
     public DirectoryWatcherImpl() {
@@ -40,7 +40,6 @@ public class DirectoryWatcherImpl implements DirectoryWatcher {
                 Path path = (Path) key.watchable();
                 path = path.toAbsolutePath();
 
-
                 for (WatchEvent<?> watchEvent : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = watchEvent.kind();
 
@@ -49,11 +48,11 @@ public class DirectoryWatcherImpl implements DirectoryWatcher {
                     if (kind == OVERFLOW) {
                         continue;
                     } else if (kind == ENTRY_CREATE) {
-                        createdSet.add(event.context());
+                        createdSet.add(Paths.get(path.toString(),event.context().toString()));
                     } else if (kind == ENTRY_DELETE) {
-                        deletedSet.add(event.context());
+                        deletedSet.add(Paths.get(path.toString(),event.context().toString()));
                     } else if (kind == ENTRY_MODIFY) {
-                        modifiedSet.add(event.context());
+                        modifiedSet.add(Paths.get(path.toString(),event.context().toString()));
                     }
                     generalSet.add(event.context());
 
